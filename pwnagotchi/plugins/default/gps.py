@@ -8,17 +8,18 @@ import logging
 import json
 import os
 
-RUNNING = False
+running = False
 OPTIONS = dict()
 
+
 def on_loaded():
-    logging.info("%s plugin loaded" % __name__)
+    logging.info("gps plugin loaded for %s:%d" % OPTIONS['gpsdHost'], OPTIONS['gpsdPort'])
+
 
 def on_ready(agent):
-    global RUNNING
-    global OPTIONS
+    global running
 
-    logging.info("enabling gps bettercap's module for %s:%d" % (OPTIONS['gpsdHost'], OPTIONS['gpsdPort']))
+    logging.info("enabling gps bettercap's module for %s:%d" % OPTIONS['gpsdHost'], OPTIONS['gpsdPort'])
     try:
         agent.run('gps off')
     except:
@@ -27,12 +28,11 @@ def on_ready(agent):
     agent.run('set gps.gpsdHost %s' % OPTIONS['gpsdHost'])
     agent.run('set gps.gpsdPort %d' % OPTIONS['gpsdPort'])
     agent.run('gps on')
-    RUNNING = True
+    running = True
+
 
 def on_handshake(agent, filename, access_point, client_station):
-    global RUNNING
-
-    if RUNNING:
+    if running:
         info = agent.session()
         gps = info['gps']
         gps_filename = filename.replace('.pcap', '.gps.json')
